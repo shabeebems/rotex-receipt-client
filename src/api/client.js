@@ -29,6 +29,13 @@ export function createCustomer(payload) {
   })
 }
 
+export function updateCustomer(customerId, payload) {
+  return request(`/customers/${encodeURIComponent(customerId)}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  })
+}
+
 export function fetchOrders() {
   return request('/orders')
 }
@@ -36,6 +43,13 @@ export function fetchOrders() {
 export function createOrder(payload) {
   return request('/orders', {
     method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function updateOrder(orderId, payload) {
+  return request(`/orders/${encodeURIComponent(orderId)}`, {
+    method: 'PUT',
     body: JSON.stringify(payload),
   })
 }

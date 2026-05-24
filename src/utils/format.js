@@ -18,6 +18,13 @@ export function formatDate(date = new Date()) {
   }).format(date)
 }
 
+export function formatCreatedAt(value) {
+  if (!value) return '—'
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return '—'
+  return formatDate(date)
+}
+
 export function calcDiscount(actual, offer) {
   const actualNum = Number(actual) || 0
   const offerNum = Number(offer) || 0
