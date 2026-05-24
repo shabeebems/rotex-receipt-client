@@ -2,14 +2,19 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import OrderList from './components/OrderList'
 import CustomerList from './components/CustomerList'
 import OrderPreviewModal from './components/OrderPreviewModal'
+import EditCustomerModal from './components/EditCustomerModal'
+import EditOrderModal from './components/EditOrderModal'
 import ReceiptDocument from './components/ReceiptDocument'
 import {
   createCustomer,
   createOrder,
   fetchCustomers,
   fetchOrders,
+  updateCustomer,
+  updateOrder,
 } from './api/client'
 import { getCustomerById } from './utils/customers'
+import { canDownloadReceipt } from './utils/orders'
 import { downloadElementAsPdf } from './utils/pdf'
 import { COMPANY_NAME } from './utils/format'
 
@@ -27,7 +32,11 @@ export default function App() {
   const [loadError, setLoadError] = useState('')
   const [creatingCustomer, setCreatingCustomer] = useState(false)
   const [creatingOrder, setCreatingOrder] = useState(false)
+  const [updatingCustomer, setUpdatingCustomer] = useState(false)
+  const [updatingOrder, setUpdatingOrder] = useState(false)
   const [previewOrder, setPreviewOrder] = useState(null)
+  const [editingCustomer, setEditingCustomer] = useState(null)
+  const [editingOrder, setEditingOrder] = useState(null)
   const [receiptPdfJob, setReceiptPdfJob] = useState(null)
   const [orderDownloading, setOrderDownloading] = useState(false)
   const orderPreviewRef = useRef(null)
@@ -38,6 +47,7 @@ export default function App() {
     try {
       const data = await fetchCustomers()
       setCustomers(data)
+      setLoadError('')
     } catch (error) {
       setLoadError(error.message)
     } finally {
@@ -50,6 +60,7 @@ export default function App() {
     try {
       const data = await fetchOrders()
       setOrders(data)
+      setLoadError('')
     } catch (error) {
       setLoadError(error.message)
     } finally {
@@ -91,6 +102,19 @@ export default function App() {
     }
   }
 
+  async function handleUpdateCustomer(payload) {
+    if (!editingCustomer) return
+
+    setUpdatingCustomer(true)
+    try {
+      await updateCustomer(editingCustomer.id, payload)
+      await loadCustomers()
+      setEditingCustomer(null)
+    } finally {
+      setUpdatingCustomer(false)
+    }
+  }
+
   async function handleCreateOrder(payload) {
     setCreatingOrder(true)
     try {
@@ -101,7 +125,24 @@ export default function App() {
     }
   }
 
+  async function handleUpdateOrder(payload) {
+    if (!editingOrder) return
+
+    setUpdatingOrder(true)
+    try {
+      const updated = await updateOrder(editingOrder.orderId, payload)
+      await Promise.all([loadOrders(), loadCustomers()])
+      setEditingOrder(null)
+      if (previewOrder?.orderId === updated.orderId) {
+        setPreviewOrder(updated)
+      }
+    } finally {
+      setUpdatingOrder(false)
+    }
+  }
+
   function handleDownloadReceipt(order) {
+    if (!canDownloadReceipt(order)) return
     setReceiptPdfJob({ order })
   }
 
@@ -175,6 +216,7 @@ export default function App() {
               onDownloadReceipt={handleDownloadReceipt}
               onViewOrderDetails={handleViewOrderDetails}
               onCreateOrder={handleCreateOrder}
+              onEditOrder={setEditingOrder}
               creating={creatingOrder}
             />
           ) : (
@@ -182,6 +224,7 @@ export default function App() {
               customers={customers}
               loading={loadingCustomers}
               onCreateCustomer={handleCreateCustomer}
+              onEditCustomer={setEditingCustomer}
               creating={creatingCustomer}
             />
           )}
@@ -196,6 +239,25 @@ export default function App() {
           onClose={() => setPreviewOrder(null)}
           onDownload={handleDownloadOrderFromPreview}
           downloading={orderDownloading}
+        />
+      )}
+
+      {editingCustomer && (
+        <EditCustomerModal
+          customer={editingCustomer}
+          onClose={() => setEditingCustomer(null)}
+          onSubmit={handleUpdateCustomer}
+          submitting={updatingCustomer}
+        />
+      )}
+
+      {editingOrder && (
+        <EditOrderModal
+          order={editingOrder}
+          customers={customers}
+          onClose={() => setEditingOrder(null)}
+          onSubmit={handleUpdateOrder}
+          submitting={updatingOrder}
         />
       )}
 

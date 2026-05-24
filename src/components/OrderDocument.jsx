@@ -1,9 +1,9 @@
 import { forwardRef } from 'react'
-import { COMPANY_NAME, calcDiscount, formatCurrency, formatDate } from '../utils/format'
+import BillSummary from './BillSummary'
+import { COMPANY_NAME, formatCreatedAt, formatCurrency, formatDate } from '../utils/format'
 
 const OrderDocument = forwardRef(function OrderDocument({ order, customerName }, ref) {
-  const { saved, percent } = calcDiscount(order.actualPrice, order.offerPrice)
-  const orderDate = order.orderDate || formatDate()
+  const orderDate = order.createdAt ? formatCreatedAt(order.createdAt) : formatDate()
 
   return (
     <div
@@ -28,7 +28,7 @@ const OrderDocument = forwardRef(function OrderDocument({ order, customerName },
           <p className="mt-0.5 font-mono font-medium text-slate-800">{order.customerId}</p>
         </div>
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Order Date</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Created</p>
           <p className="mt-0.5 font-medium text-slate-800">{orderDate}</p>
         </div>
         <div>
@@ -54,48 +54,22 @@ const OrderDocument = forwardRef(function OrderDocument({ order, customerName },
             <tr className="border-b border-slate-200 text-left text-xs font-medium uppercase tracking-wide text-slate-400">
               <th className="pb-2 pr-2">Resume for</th>
               <th className="pb-2 pr-2">Template</th>
-              <th className="pb-2 text-right">Actual</th>
-              <th className="pb-2 text-right">Offer</th>
+              <th className="pb-2 text-right">Listed Price</th>
             </tr>
           </thead>
           <tbody>
-            {order.orderDetails.map((item, index) => {
-              const lineSaved = Math.max(0, item.actualRate - item.offerRate)
-              return (
-                <tr key={`${item.templateCode}-${index}`} className="border-b border-slate-100">
-                  <td className="py-3 pr-2 font-medium text-slate-900">{item.resumeName}</td>
-                  <td className="py-3 pr-2 font-mono text-xs text-indigo-600">{item.templateCode}</td>
-                  <td className="py-3 text-right text-slate-600">{formatCurrency(item.actualRate)}</td>
-                  <td className="py-3 text-right font-medium text-indigo-700">
-                    {formatCurrency(item.offerRate)}
-                    {lineSaved > 0 && (
-                      <p className="mt-0.5 text-xs font-normal text-emerald-600">
-                        −{formatCurrency(lineSaved)}
-                      </p>
-                    )}
-                  </td>
-                </tr>
-              )
-            })}
+            {order.orderDetails.map((item, index) => (
+              <tr key={`${item.templateCode}-${index}`} className="border-b border-slate-100">
+                <td className="py-3 pr-2 font-medium text-slate-900">{item.resumeName}</td>
+                <td className="py-3 pr-2 font-mono text-xs text-indigo-600">{item.templateCode}</td>
+                <td className="py-3 text-right text-slate-700">{formatCurrency(item.actualRate)}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </section>
 
-      <div className="mt-6 grid grid-cols-2 gap-4 rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-sm">
-        <div>
-          <p className="text-slate-400">Total actual price</p>
-          <p className="mt-0.5 font-semibold text-slate-800">{formatCurrency(order.actualPrice)}</p>
-        </div>
-        <div>
-          <p className="text-slate-400">Total offer price</p>
-          <p className="mt-0.5 font-semibold text-indigo-700">{formatCurrency(order.offerPrice)}</p>
-        </div>
-        {saved > 0 && (
-          <div className="col-span-2 border-t border-slate-200 pt-3 font-medium text-emerald-600">
-            Total savings {formatCurrency(saved)} ({percent}%)
-          </div>
-        )}
-      </div>
+      <BillSummary actualPrice={order.actualPrice} offerPrice={order.offerPrice} />
 
       <footer className="mt-8 border-t border-slate-100 pt-4 text-center text-xs text-slate-400">
         This is a computer-generated order summary from {COMPANY_NAME}.

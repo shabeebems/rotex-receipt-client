@@ -1,9 +1,23 @@
+import { formatCreatedAt } from '../utils/format'
 import CreateCustomerForm from './CreateCustomerForm'
+
+function ActionButton({ children, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 sm:text-sm"
+    >
+      {children}
+    </button>
+  )
+}
 
 export default function CustomerList({
   customers,
   loading,
   onCreateCustomer,
+  onEditCustomer,
   creating,
 }) {
   if (loading) {
@@ -21,7 +35,7 @@ export default function CustomerList({
         <p className="mt-6 text-sm text-slate-500">No customers yet. Add one above.</p>
       ) : (
         <div className="mt-6 overflow-x-auto rounded-xl border border-slate-200">
-          <table className="w-full min-w-[560px] text-left text-sm">
+          <table className="w-full min-w-[640px] text-left text-sm">
             <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-4 py-3">ID</th>
@@ -30,7 +44,8 @@ export default function CustomerList({
                 <th className="px-4 py-3">Phone</th>
                 <th className="px-4 py-3">City</th>
                 <th className="px-4 py-3 text-center">Orders</th>
-                <th className="px-4 py-3">Joined</th>
+                <th className="px-4 py-3">Created</th>
+                <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
@@ -46,7 +61,10 @@ export default function CustomerList({
                       {customer.ordersCount}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{customer.joined}</td>
+                  <td className="px-4 py-3 text-slate-600">{formatCreatedAt(customer.createdAt)}</td>
+                  <td className="px-4 py-3 text-right">
+                    <ActionButton onClick={() => onEditCustomer(customer)}>Edit</ActionButton>
+                  </td>
                 </tr>
               ))}
             </tbody>
