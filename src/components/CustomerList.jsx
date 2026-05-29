@@ -50,8 +50,10 @@ export default function CustomerList({
             </thead>
             <tbody className="divide-y divide-slate-100 bg-white">
               {customers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-slate-50/80">
-                  <td className="px-4 py-3 font-mono text-xs text-slate-500">{customer.id}</td>
+                <tr key={customer.customerId} className="hover:bg-slate-50/80">
+                  <td className="px-4 py-3 font-mono text-xs text-slate-500">
+                    {customer.customerId}
+                  </td>
                   <td className="px-4 py-3 font-medium text-slate-900">{customer.name}</td>
                   <td className="px-4 py-3 text-slate-600">{customer.email}</td>
                   <td className="px-4 py-3 text-slate-600">{customer.phone}</td>

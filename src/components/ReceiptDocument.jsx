@@ -4,7 +4,6 @@ import { COMPANY_NAME, formatCreatedAt, formatCurrency, formatDate } from '../ut
 
 const ReceiptDocument = forwardRef(function ReceiptDocument({ order, customerName }, ref) {
   const receiptDate = order.createdAt ? formatCreatedAt(order.createdAt) : formatDate()
-  const receiptNo = `RCP-${order.orderId.replace(/\s+/g, '')}`
 
   return (
     <div
@@ -19,34 +18,30 @@ const ReceiptDocument = forwardRef(function ReceiptDocument({ order, customerNam
 
       <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Receipt No.</p>
-          <p className="mt-0.5 font-mono text-sm font-semibold text-slate-800">{receiptNo}</p>
-        </div>
-        <div className="text-right">
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Date</p>
           <p className="mt-0.5 font-medium text-slate-800">{receiptDate}</p>
         </div>
-        <div>
+        <div className="text-right">
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Order ID</p>
           <p className="mt-0.5 font-mono font-semibold text-indigo-600">{order.orderId}</p>
         </div>
-        <div className="text-right">
+        <div>
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Customer ID</p>
           <p className="mt-0.5 font-mono font-medium text-slate-800">{order.customerId}</p>
         </div>
-        <div>
+        <div className="text-right">
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Customer</p>
           <p className="mt-0.5 font-semibold text-slate-900">{customerName || '—'}</p>
         </div>
-        <div className="text-right">
+        <div>
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Service</p>
           <p className="mt-0.5 font-medium text-slate-800">{order.service}</p>
         </div>
-        <div>
+        <div className="text-right">
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Order Status</p>
           <p className="mt-0.5 font-medium text-slate-800">{order.status}</p>
         </div>
-        <div className="text-right">
+        <div>
           <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Payment Status</p>
           <p className="mt-0.5 font-medium text-slate-800">{order.paymentStatus}</p>
         </div>
@@ -62,16 +57,27 @@ const ReceiptDocument = forwardRef(function ReceiptDocument({ order, customerNam
               <th className="pb-2 pr-2">Resume for</th>
               <th className="pb-2 pr-2">Template</th>
               <th className="pb-2 text-right">Listed Price</th>
+              <th className="pb-2 text-right">Discount Price</th>
             </tr>
           </thead>
           <tbody>
-            {order.orderDetails.map((item, index) => (
-              <tr key={`${item.templateCode}-${index}`} className="border-b border-slate-100">
-                <td className="py-3 pr-2 font-medium text-slate-900">{item.resumeName}</td>
-                <td className="py-3 pr-2 font-mono text-xs text-indigo-600">{item.templateCode}</td>
-                <td className="py-3 text-right text-slate-700">{formatCurrency(item.actualRate)}</td>
-              </tr>
-            ))}
+            {order.orderDetails.map((item, index) => {
+              const hasDiscount = Number(item.offerRate) < Number(item.actualRate)
+              return (
+                <tr key={`${item.templateCode}-${index}`} className="border-b border-slate-100">
+                  <td className="py-3 pr-2 font-medium text-slate-900">{item.resumeName}</td>
+                  <td className="py-3 pr-2 font-mono text-xs text-indigo-600">{item.templateCode}</td>
+                  <td
+                    className={`py-3 text-right ${hasDiscount ? 'text-slate-400 line-through' : 'text-slate-700'}`}
+                  >
+                    {formatCurrency(item.actualRate)}
+                  </td>
+                  <td className="py-3 text-right font-medium text-emerald-600">
+                    {hasDiscount ? formatCurrency(item.offerRate) : '—'}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </section>

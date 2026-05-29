@@ -92,7 +92,6 @@ export default function OrderList({
                     <td className="px-4 py-3 font-mono text-indigo-600">{order.orderId}</td>
                     <td className="px-4 py-3">
                       <p className="font-medium text-slate-900">{customer?.name ?? '—'}</p>
-                      <p className="text-xs text-slate-400">{order.customerId}</p>
                     </td>
                     <td className="px-4 py-3 text-slate-600">{formatCreatedAt(order.createdAt)}</td>
                     <td className="px-4 py-3 text-slate-600">{order.orderDetails.length}</td>

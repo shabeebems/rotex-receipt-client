@@ -30,7 +30,7 @@ export default function EditCustomerModal({ customer, onClose, onSubmit, submitt
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
           <div>
             <h3 className="text-lg font-semibold text-slate-900">Edit customer</h3>
-            <p className="text-sm text-slate-500 font-mono">{customer.id}</p>
+            <p className="text-sm text-slate-500 font-mono">{customer.customerId}</p>
           </div>
           <button
             type="button"

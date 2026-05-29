@@ -55,16 +55,27 @@ const OrderDocument = forwardRef(function OrderDocument({ order, customerName },
               <th className="pb-2 pr-2">Resume for</th>
               <th className="pb-2 pr-2">Template</th>
               <th className="pb-2 text-right">Listed Price</th>
+              <th className="pb-2 text-right">Discount Price</th>
             </tr>
           </thead>
           <tbody>
-            {order.orderDetails.map((item, index) => (
-              <tr key={`${item.templateCode}-${index}`} className="border-b border-slate-100">
-                <td className="py-3 pr-2 font-medium text-slate-900">{item.resumeName}</td>
-                <td className="py-3 pr-2 font-mono text-xs text-indigo-600">{item.templateCode}</td>
-                <td className="py-3 text-right text-slate-700">{formatCurrency(item.actualRate)}</td>
-              </tr>
-            ))}
+            {order.orderDetails.map((item, index) => {
+              const hasDiscount = Number(item.offerRate) < Number(item.actualRate)
+              return (
+                <tr key={`${item.templateCode}-${index}`} className="border-b border-slate-100">
+                  <td className="py-3 pr-2 font-medium text-slate-900">{item.resumeName}</td>
+                  <td className="py-3 pr-2 font-mono text-xs text-indigo-600">{item.templateCode}</td>
+                  <td
+                    className={`py-3 text-right ${hasDiscount ? 'text-slate-400 line-through' : 'text-slate-700'}`}
+                  >
+                    {formatCurrency(item.actualRate)}
+                  </td>
+                  <td className="py-3 text-right font-medium text-emerald-600">
+                    {hasDiscount ? formatCurrency(item.offerRate) : '—'}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </section>

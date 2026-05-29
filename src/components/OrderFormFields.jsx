@@ -1,13 +1,6 @@
 const inputClass =
   'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
 
-export const emptyOrderLine = {
-  resumeName: '',
-  templateCode: '',
-  actualRate: '',
-  offerRate: '',
-}
-
 export default function OrderFormFields({
   form,
   setForm,
@@ -32,8 +25,8 @@ export default function OrderFormFields({
           >
             <option value="">Select customer</option>
             {customers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} ({c.id})
+              <option key={c.customerId} value={c.customerId}>
+                {c.name} ({c.customerId})
               </option>
             ))}
           </select>

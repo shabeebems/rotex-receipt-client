@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import OrderFormFields, { emptyOrderLine } from './OrderFormFields'
+import OrderFormFields from './OrderFormFields'
+import { emptyOrderLine } from './orderFormConstants'
 
 const emptyForm = {
   customerId: '',
