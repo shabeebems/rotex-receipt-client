@@ -69,8 +69,14 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    loadCustomers()
-    loadOrders()
+    // Defer initial fetch so we don't synchronously trigger state updates
+    // inside the effect body (keeps ESLint happy + avoids cascading renders).
+    const t = setTimeout(() => {
+      loadCustomers()
+      loadOrders()
+    }, 0)
+
+    return () => clearTimeout(t)
   }, [loadCustomers, loadOrders])
 
   const previewCustomerName = previewOrder
@@ -107,7 +113,7 @@ export default function App() {
 
     setUpdatingCustomer(true)
     try {
-      await updateCustomer(editingCustomer.id, payload)
+      await updateCustomer(editingCustomer.customerId, payload)
       await loadCustomers()
       setEditingCustomer(null)
     } finally {

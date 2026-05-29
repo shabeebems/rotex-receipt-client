@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import OrderFormFields, { emptyOrderLine } from './OrderFormFields'
+import OrderFormFields from './OrderFormFields'
+import { emptyOrderLine } from './orderFormConstants'
 
 export default function EditOrderModal({ order, customers, onClose, onSubmit, submitting }) {
   const [form, setForm] = useState({
